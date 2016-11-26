@@ -23,19 +23,26 @@ foreach (string s in csvFiles)
 }
 
 string[] csvRecents;
+string tempDate;
+int x = 0;
+    int[] temps;
 
 for(int i = 0; i < csvList.Count(); i++)
 {
-    int[] temps;
     string tempComp = csvList[i][0];
     for(int j = i; j < csvList.Count(); j++)
     {
         if(tempComp == csvList[j][0])
         {
-            temps[0] = csvList[j][1];
-            temps[1] = csvList[j][2];
-            temps[2] = csvList[j][3];
+            tempDate = csvList[j][1] + csvList[j][2] + csvList[j][3]
+            temps[j] = Int32.Parse(tempDate);
+
             i++;
+        }
+
+        else
+        {
+            Array.Sort(temps);
         }
     }
 }
