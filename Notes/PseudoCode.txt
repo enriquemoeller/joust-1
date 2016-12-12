@@ -42,7 +42,7 @@ for(int i = 0; i < csvList.Count(); i++)
 
         else
         {
-            Array.Sort(temps);
+            temps.Sort();
         }
     }
 }
