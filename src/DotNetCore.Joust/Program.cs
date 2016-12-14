@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+//using Microsoft.VisualBasic.FileIO;
 
 namespace DotNetCore.Joust
 {
@@ -131,7 +132,26 @@ namespace DotNetCore.Joust
             Console.WriteLine("\nfirst: " + temps[0] + "\nsecond: " + temps[1] + "\nthird: " + temps[2] + 
             "\nfourth: " + temps[3] + "\nfifth: " + temps[4]);
 
-            
+            //Console.WriteLine("\n\nfile path1: " + csvFiles[temps[0]]);
+
+            //TextFieldParser csvParser = new TextFieldParser(csvFiles[temps[0]]);
+
+            List<String[]> csvValues = new List<String[]>();
+            int[] totalValues = new int[totalNames];
+
+            for(int l = 0; l < totalNames; l++)
+            {
+                String[] tempValues = File.ReadAllText(csvFiles[temps[l]]).Split(',', '\n');
+                totalValues[l] = tempValues.Length;
+                csvValues.Add(tempValues);
+                Console.WriteLine("totalValues" + l + ": " + tempValues.Length);
+                //Console.WriteLine(totalNames);
+            }
+
+            /*for(int n = 0; n < totalNames; n++)
+            {
+
+            }*/
 
         }
     }
