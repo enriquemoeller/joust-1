@@ -9,19 +9,64 @@ namespace DotNetCore.Joust
     {
         public static void Main(string[] args)
         {
-            //Welcome the user and prompt them for the 4 inputs necessary
+            //Welcome the user to the program
             Console.WriteLine("Welcome to the Carpet Quote Generator!");
-            Console.WriteLine("Please enter the square footage required and press Enter: ");
+
+            //prompt user for square footage and store the input to a string
+            Console.WriteLine("\nPlease enter the square footage required and press Enter: ");
             String footageString = Console.ReadLine();
-            Console.WriteLine("Please enter the number of rooms and press Enter: ");
+
+            //declare an integer for storing the square footage
+            int squareFootage;
+
+            //check to see if the input is a valid integer and keep asking for it if not
+            while (int.TryParse(footageString, out squareFootage) == false)
+            {
+                Console.WriteLine("\nThat was not a valid entry, please try again...");
+                Console.WriteLine("\nPlease enter the square footage required and press Enter: ");
+                footageString = Console.ReadLine();
+            }
+
+            //promt the user for number of rooms and store the input to a string
+            Console.WriteLine("\nPlease enter the number of rooms and press Enter: ");
             String roomsString = Console.ReadLine();
-            Console.WriteLine("Please enter the hourly cost of labor and press Enter: ");
+
+            //declare an integer for storing the square footage
+            int numRooms;
+
+            while (int.TryParse(roomsString, out numRooms) == false)
+            {
+                Console.WriteLine("\nThat was not a valid entry, please try again...");
+                Console.WriteLine("\nPlease enter the number of rooms and press Enter: ");
+                roomsString = Console.ReadLine();
+            }
+
+            Console.WriteLine("\nPlease enter the hourly cost of labor and press Enter: ");
             String laborString = Console.ReadLine();
-            Console.WriteLine("Please enter the desired grade of carpet and press Enter: ");
+
+            int hoursLabor;
+
+            while (int.TryParse(laborString, out hoursLabor) == false)
+            {
+                Console.WriteLine("\nThat was not a valid entry, please try again...");
+                Console.WriteLine("\nPlease enter the hourly cost of labor and press Enter: ");
+                laborString = Console.ReadLine();
+            }
+
+            Console.WriteLine("\nPlease enter the desired grade of carpet and press Enter: ");
             String gradeString = Console.ReadLine();
 
-            Console.WriteLine("Square Footage: " + footageString + "\nNumber of Rooms: " + roomsString + 
-            "\nHourly Cost of Labor: " + laborString + "\nCarpet Grade: " + gradeString);
+            int carpetGrade;
+
+            while (int.TryParse(gradeString, out carpetGrade) == false)
+            {
+                Console.WriteLine("\nThat was not a valid entry, please try again...");
+                Console.WriteLine("\nPlease enter the desired grade of carpet and press Enter: ");
+                gradeString = Console.ReadLine();
+            }
+
+            Console.WriteLine("\nSquare Footage: " + squareFootage + "\nNumber of Rooms: " + numRooms + 
+            "\nHourly Cost of Labor: " + hoursLabor + "\nCarpet Grade: " + carpetGrade);
 
             //Create a temporary path that finds the current directory and navigates up by 2 folders
             String tempPath = Path.GetFullPath(Path.Combine(System.IO.Directory.GetCurrentDirectory(), @"..\..\"));
@@ -144,14 +189,92 @@ namespace DotNetCore.Joust
                 String[] tempValues = File.ReadAllText(csvFiles[temps[l]]).Split(',', '\n');
                 totalValues[l] = tempValues.Length;
                 csvValues.Add(tempValues);
-                Console.WriteLine("totalValues" + l + ": " + tempValues.Length);
+                //Console.WriteLine("totalValues" + l + ": " + totalValues[l]);
                 //Console.WriteLine(totalNames);
             }
 
-            /*for(int n = 0; n < totalNames; n++)
-            {
+            Console.WriteLine("value1: " + csvValues[0][0]);
+            Console.WriteLine("value2: " + csvValues[0][1]);
+            Console.WriteLine("value3: " + csvValues[0][2]);
+            Console.WriteLine("value4: " + csvValues[0][3]);
+            Console.WriteLine("value5: " + csvValues[0][4]);
+            Console.WriteLine("value6: " + csvValues[0][5]);
 
-            }*/
+            List<String[]> cheapestCarpets = new List<String[]>();
+
+            int z = 0;
+
+            int thisCompany = 0;
+            String thisID = null;
+            int thisGrade = 0;
+            int thisLength = 0;
+            int thisWidth = 0;
+            float thisPrice = 0;
+            int thisSquareFootage = 0;
+            float thisCostRatio = 0;
+
+            int lastCompany;
+            String lastID = null;
+            int lastGrade;
+            int lastLength;
+            int lastWidth;
+            float lastPrice;
+            int lastSquareFootage;
+            float lastCostRatio;
+
+            for(int n = 0; n < totalNames; n++)
+            {
+                
+
+                while(z < totalValues[n])
+                {
+                    
+                    if (thisID == null)
+                    {
+                        thisCompany = n;
+                        thisID = csvValues[n][z];
+                        z++;
+                        thisGrade = Int32.Parse(csvValues[n][z]);
+                        z++;
+                        thisLength = Int32.Parse(csvValues[n][z]);
+                        z++;
+                        thisWidth = Int32.Parse(csvValues[n][z]);
+                        z++;
+                        thisPrice = float.Parse(csvValues[n][z]);
+                        z++;
+                        thisSquareFootage = thisLength * thisWidth;
+                        thisCostRatio = thisSquareFootage / thisPrice;
+                    }
+                    else
+                    {
+                        lastCompany = thisCompany;
+                        lastID = thisID;
+                        lastGrade = thisGrade;
+                        lastLength = thisLength;
+                        lastWidth = thisWidth;
+                        lastPrice = thisPrice;
+                        lastSquareFootage = thisSquareFootage;
+                        lastCostRatio = thisCostRatio;
+
+                        thisID = csvValues[n][z];
+                        z++;
+                        thisGrade = Int32.Parse(csvValues[n][z]);
+                        z++;
+                        thisLength = Int32.Parse(csvValues[n][z]);
+                        z++;
+                        thisWidth = Int32.Parse(csvValues[n][z]);
+                        z++;
+                        thisPrice = float.Parse(csvValues[n][z]);
+                        z++;
+                        thisSquareFootage = thisLength * thisWidth;
+                        thisCostRatio = thisSquareFootage / thisPrice;
+
+                        
+                    }
+                }
+            }
+
+
 
         }
     }
