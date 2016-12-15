@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-//using Microsoft.VisualBasic.FileIO;
+
 
 namespace DotNetCore.Joust
 {
@@ -159,10 +159,6 @@ namespace DotNetCore.Joust
                             {
                                 temps[x] = i;
                             }
-                            else
-                            {
-                                //do nothing
-                            }
                         }
 
                         //Console.WriteLine(csvList[j][0] + " " + tempDate + "\n");
@@ -222,11 +218,15 @@ namespace DotNetCore.Joust
             int lastSquareFootage;
             float lastCostRatio;
 
+            //while(thisGrade <= 9)
+            //{
+
             for(int n = 0; n < totalNames; n++)
             {
-                
+                z = 0;
+                //bool firstPass = true;
 
-                while(z < totalValues[n])
+                while(z < totalValues[n] - 1)
                 {
                     
                     if (thisID == null)
@@ -256,6 +256,9 @@ namespace DotNetCore.Joust
                         lastSquareFootage = thisSquareFootage;
                         lastCostRatio = thisCostRatio;
 
+                        //Console.WriteLine(z + "totalValues: " + totalValues[n]);
+
+                        thisCompany = n;
                         thisID = csvValues[n][z];
                         z++;
                         thisGrade = Int32.Parse(csvValues[n][z]);
@@ -268,11 +271,43 @@ namespace DotNetCore.Joust
                         z++;
                         thisSquareFootage = thisLength * thisWidth;
                         thisCostRatio = thisSquareFootage / thisPrice;
-
                         
+                        
+
+                        if (lastGrade == carpetGrade && lastCostRatio > thisCostRatio && lastSquareFootage >= squareFootage /*&& lastSquareFootage < (squareFootage * 1.15)*/)
+                        {
+                            //set the last carpet as the cheapest one for now
+                            String[] tempCarpet = {lastID, lastGrade.ToString(), lastLength.ToString(), lastWidth.ToString(), lastPrice.ToString(), csvList[temps[n]][0]};
+                            cheapestCarpets.Clear();
+                            cheapestCarpets.Add(tempCarpet);
+                            //Console.WriteLine(tempCarpet[0] + " " + tempCarpet[1] + " " + tempCarpet[2] + " " + tempCarpet[3] + " " + tempCarpet[4] + " " + tempCarpet[5]);
+                            //Console.WriteLine(cheapestCarpets[0][0]);
+                        }
+
+                        else if (thisGrade == carpetGrade && thisCostRatio > lastCostRatio && thisSquareFootage >= squareFootage /*&& thisSquareFootage < (squareFootage * 1.15)*/)
+                        {
+                            //set this carpet as the cheapest one for now
+                            String[] tempCarpet = {thisID, thisGrade.ToString(), thisLength.ToString(), thisWidth.ToString(), thisPrice.ToString(), csvList[temps[n]][0]};
+                            cheapestCarpets.Clear();
+                            cheapestCarpets.Add(tempCarpet);
+                            //Console.WriteLine(cheapestCarpets[0][0]);
+                        }
+                        
+                        
+
                     }
                 }
             }
+
+            //Console.WriteLine(cheapestCarpets[0][0]);
+
+            float totalCost = float.Parse(cheapestCarpets[0][1]) + (hoursLabor / 2) + ((hoursLabor / 2) * numRooms);
+            totalCost /= .60f;
+            Console.WriteLine(totalCost);
+
+            //thisGrade++;
+
+            //}
 
 
 
