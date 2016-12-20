@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 
 namespace DotNetCore.Joust
@@ -16,11 +17,11 @@ namespace DotNetCore.Joust
             Console.WriteLine("\nPlease enter the square footage required and press Enter: ");
             String footageString = Console.ReadLine();
 
-            //declare an integer for storing the square footage
-            int squareFootage;
+            //declare an array of integers to store the user input
+            int[] userInputs = new int[4];
 
             //check to see if the input is a valid integer and keep asking for it if not
-            while (int.TryParse(footageString, out squareFootage) == false)
+            while (int.TryParse(footageString, out userInputs[0]) == false)
             {
                 Console.WriteLine("\nThat was not a valid entry, please try again...");
                 Console.WriteLine("\nPlease enter the square footage required and press Enter: ");
@@ -31,10 +32,7 @@ namespace DotNetCore.Joust
             Console.WriteLine("\nPlease enter the number of rooms and press Enter: ");
             String roomsString = Console.ReadLine();
 
-            //declare an integer for storing the square footage
-            int numRooms;
-
-            while (int.TryParse(roomsString, out numRooms) == false)
+            while (int.TryParse(roomsString, out userInputs[1]) == false)
             {
                 Console.WriteLine("\nThat was not a valid entry, please try again...");
                 Console.WriteLine("\nPlease enter the number of rooms and press Enter: ");
@@ -44,9 +42,7 @@ namespace DotNetCore.Joust
             Console.WriteLine("\nPlease enter the hourly cost of labor and press Enter: ");
             String laborString = Console.ReadLine();
 
-            int hoursLabor;
-
-            while (int.TryParse(laborString, out hoursLabor) == false)
+            while (int.TryParse(laborString, out userInputs[2]) == false)
             {
                 Console.WriteLine("\nThat was not a valid entry, please try again...");
                 Console.WriteLine("\nPlease enter the hourly cost of labor and press Enter: ");
@@ -56,25 +52,18 @@ namespace DotNetCore.Joust
             Console.WriteLine("\nPlease enter the desired grade of carpet and press Enter: ");
             String gradeString = Console.ReadLine();
 
-            int carpetGrade;
-
-            while (int.TryParse(gradeString, out carpetGrade) == false)
+            while (int.TryParse(gradeString, out userInputs[3]) == false)
             {
                 Console.WriteLine("\nThat was not a valid entry, please try again...");
                 Console.WriteLine("\nPlease enter the desired grade of carpet and press Enter: ");
                 gradeString = Console.ReadLine();
             }
 
-            Console.WriteLine("\nSquare Footage: " + squareFootage + "\nNumber of Rooms: " + numRooms + 
-            "\nHourly Cost of Labor: " + hoursLabor + "\nCarpet Grade: " + carpetGrade);
-
             //Create a temporary path that finds the current directory and navigates up by 2 folders
             String tempPath = Path.GetFullPath(Path.Combine(System.IO.Directory.GetCurrentDirectory(), @"..\..\"));
             
             //Create a path that combines the temporary path above and adds the data folder to the end of it
             String path = Path.Combine(tempPath, @"data\");
-
-            //Console.WriteLine("\npath: " + path);
 
             //create an array that stores each csv full file path and extension
             String[] csvFiles = Directory.GetFiles(path, "*.csv");
@@ -93,24 +82,14 @@ namespace DotNetCore.Joust
 
                 //store each string that is split up based on the periods
                 csvList.Add(tempS.Split('.'));
-
-                //Console.WriteLine(tempS + "\n");
             }
 
-            //Console.WriteLine(numFiles);
-
-            
-            //String[] csvRecents;
-            //String tempDate = null;
-            //String lastDate = null;
+            //declare 3 new integers for counting and storing the total unique amount of company names
             int x = 0;
             int i = 0;
             int totalNames = 0;
             
-
-            Console.WriteLine("Number of Files: " + numFiles);
-
-            //first count the number of unique company names in the list
+            //first count the number of unique company names in the list and store in total names
             while(i < numFiles)
             {
                 String tempName = csvList[i][0];
@@ -128,31 +107,38 @@ namespace DotNetCore.Joust
             //create an array of integers that has the number of ints as there are company names
             int[] temps = new int[totalNames];
 
-            Console.WriteLine("Total Companies: " + totalNames);
-
-            //reset i to 0
+            //reset i to 0 for counting purposes
             i = 0;
 
+            //loop until i is equal to number of files
             while(i < numFiles)
             {
+                //create 3 new strings to store the current company name, current company date, and the last company date
                 String tempComp = csvList[i][0];
                 String tempDate = null;
                 String lastDate = null;
 
+                //loop as many times as there are files starting from the index i
                 for(int j = i; j < numFiles; j++)
                 {
+                    //check to see if the current company stored is the same as the next one in the list
                     if(tempComp == csvList[j][0])
                     {
+                        //check to see if the current date is null or not and store it into last date if it is not
                         if(tempDate != null)
                         {
                             lastDate = tempDate;
                         }
+                        //if it is null, store the current i index into the temps array
                         else
                         {
                             temps[x] = i;
                         }
+                        //piece togeth the date parts and store into the temp date string
                         tempDate = csvList[j][1] + csvList[j][2] + csvList[j][3];
 
+                        //check to see if the last date was null and if not, check iff the temp date is greater than last date, if so, 
+                        //store the i value into temps at the x index
                         if(lastDate != null)
                         {
                             if(Int32.Parse(tempDate) > Int32.Parse(lastDate))
@@ -161,156 +147,147 @@ namespace DotNetCore.Joust
                             }
                         }
 
-                        //Console.WriteLine(csvList[j][0] + " " + tempDate + "\n");
-                        //temps[j] = Int32.Parse(tempDate);
-
+                        //add 1 to i
                         i++;
                     }
                 }
+
+                //add 1 to x
                 x++;
             }
 
-            Console.WriteLine("\nfirst: " + temps[0] + "\nsecond: " + temps[1] + "\nthird: " + temps[2] + 
-            "\nfourth: " + temps[3] + "\nfifth: " + temps[4]);
+            //create a list of string arrays to hold the data in the csv files
+            List<String[]> csvLines = new List<String[]>();
 
-            //Console.WriteLine("\n\nfile path1: " + csvFiles[temps[0]]);
+            //create an array of integers the size of the amount of company names that will store the total number of data lines for each file
+            int[] totValues = new int[totalNames];
 
-            //TextFieldParser csvParser = new TextFieldParser(csvFiles[temps[0]]);
-
-            List<String[]> csvValues = new List<String[]>();
-            int[] totalValues = new int[totalNames];
-
+            //loops as many times as there are unique company names
             for(int l = 0; l < totalNames; l++)
             {
-                String[] tempValues = File.ReadAllText(csvFiles[temps[l]]).Split(',', '\n');
-                totalValues[l] = tempValues.Length;
-                csvValues.Add(tempValues);
-                //Console.WriteLine("totalValues" + l + ": " + totalValues[l]);
-                //Console.WriteLine(totalNames);
+                //Read all the text from the current csv file and store it into a temporary array
+                String[] tempValues = File.ReadAllText(csvFiles[temps[l]]).Split('\n');
+                //set the total data values of this current csv file company l index into the total values array
+                totValues[l] = tempValues.Length - 1;
+                //remove the last item from the tempvalues array as it is an empty return line
+                tempValues = tempValues.Take(totValues[l]).ToArray();
+                //add the temp values data to the csv lines list
+                csvLines.Add(tempValues);
             }
 
-            Console.WriteLine("value1: " + csvValues[0][0]);
-            Console.WriteLine("value2: " + csvValues[0][1]);
-            Console.WriteLine("value3: " + csvValues[0][2]);
-            Console.WriteLine("value4: " + csvValues[0][3]);
-            Console.WriteLine("value5: " + csvValues[0][4]);
-            Console.WriteLine("value6: " + csvValues[0][5]);
+            //declare a new list to store all carpets
+            List<Carpet> allCarpets = new List<Carpet>();
 
-            List<String[]> cheapestCarpets = new List<String[]>();
-
-            int z = 0;
-
-            int thisCompany = 0;
-            String thisID = null;
-            int thisGrade = 0;
-            int thisLength = 0;
-            int thisWidth = 0;
-            float thisPrice = 0;
-            int thisSquareFootage = 0;
-            float thisCostRatio = 0;
-
-            int lastCompany;
-            String lastID = null;
-            int lastGrade;
-            int lastLength;
-            int lastWidth;
-            float lastPrice;
-            int lastSquareFootage;
-            float lastCostRatio;
-
-            //while(thisGrade <= 9)
-            //{
-
-            for(int n = 0; n < totalNames; n++)
+            //loop as many times as there are unique company names
+            for(int j = 0; j < totalNames; j++)
             {
-                z = 0;
-                //bool firstPass = true;
-
-                while(z < totalValues[n] - 1)
+                //loop through all items in the csvLines file at this index j
+                foreach (String line in csvLines[j])
                 {
-                    
-                    if (thisID == null)
-                    {
-                        thisCompany = n;
-                        thisID = csvValues[n][z];
-                        z++;
-                        thisGrade = Int32.Parse(csvValues[n][z]);
-                        z++;
-                        thisLength = Int32.Parse(csvValues[n][z]);
-                        z++;
-                        thisWidth = Int32.Parse(csvValues[n][z]);
-                        z++;
-                        thisPrice = float.Parse(csvValues[n][z]);
-                        z++;
-                        thisSquareFootage = thisLength * thisWidth;
-                        thisCostRatio = thisSquareFootage / thisPrice;
-                    }
-                    else
-                    {
-                        lastCompany = thisCompany;
-                        lastID = thisID;
-                        lastGrade = thisGrade;
-                        lastLength = thisLength;
-                        lastWidth = thisWidth;
-                        lastPrice = thisPrice;
-                        lastSquareFootage = thisSquareFootage;
-                        lastCostRatio = thisCostRatio;
-
-                        //Console.WriteLine(z + "totalValues: " + totalValues[n]);
-
-                        thisCompany = n;
-                        thisID = csvValues[n][z];
-                        z++;
-                        thisGrade = Int32.Parse(csvValues[n][z]);
-                        z++;
-                        thisLength = Int32.Parse(csvValues[n][z]);
-                        z++;
-                        thisWidth = Int32.Parse(csvValues[n][z]);
-                        z++;
-                        thisPrice = float.Parse(csvValues[n][z]);
-                        z++;
-                        thisSquareFootage = thisLength * thisWidth;
-                        thisCostRatio = thisSquareFootage / thisPrice;
-                        
-                        
-
-                        if (lastGrade == carpetGrade && lastCostRatio > thisCostRatio && lastSquareFootage >= squareFootage /*&& lastSquareFootage < (squareFootage * 1.15)*/)
-                        {
-                            //set the last carpet as the cheapest one for now
-                            String[] tempCarpet = {lastID, lastGrade.ToString(), lastLength.ToString(), lastWidth.ToString(), lastPrice.ToString(), csvList[temps[n]][0]};
-                            cheapestCarpets.Clear();
-                            cheapestCarpets.Add(tempCarpet);
-                            //Console.WriteLine(tempCarpet[0] + " " + tempCarpet[1] + " " + tempCarpet[2] + " " + tempCarpet[3] + " " + tempCarpet[4] + " " + tempCarpet[5]);
-                            //Console.WriteLine(cheapestCarpets[0][0]);
-                        }
-
-                        else if (thisGrade == carpetGrade && thisCostRatio > lastCostRatio && thisSquareFootage >= squareFootage /*&& thisSquareFootage < (squareFootage * 1.15)*/)
-                        {
-                            //set this carpet as the cheapest one for now
-                            String[] tempCarpet = {thisID, thisGrade.ToString(), thisLength.ToString(), thisWidth.ToString(), thisPrice.ToString(), csvList[temps[n]][0]};
-                            cheapestCarpets.Clear();
-                            cheapestCarpets.Add(tempCarpet);
-                            //Console.WriteLine(cheapestCarpets[0][0]);
-                        }
-                        
-                        
-
-                    }
+                    //store the data from the current line into an array using comma as split
+                    String[] tempValues = line.Split(',');
+                    //calculate and store the square footage
+                    int sqFootage = Int32.Parse(tempValues[2]) * Int32.Parse(tempValues[3]);
+                    //calculate and store the price per square foot
+                    float pricePerSqFoot = float.Parse(tempValues[4]) / sqFootage;
+                    //add all the values to the carpets list as a new carpet object
+                    allCarpets.Add(new Carpet {carpetId = tempValues[0], grade = Int32.Parse(tempValues[1]), length = Int32.Parse(tempValues[2]), 
+                    width = Int32.Parse(tempValues[3]), price = float.Parse(tempValues[4]), squareFootage = sqFootage, 
+                    pricePerSquareFoot = pricePerSqFoot, companyIndex = temps[j]});
                 }
             }
+            
+            //create a new carpet list that stores all carpets in ascending order by price per square foot
+            List<Carpet> carpetsByPricePerSqFoot = allCarpets.OrderBy(k => k.pricePerSquareFoot).ToList();
 
-            //Console.WriteLine(cheapestCarpets[0][0]);
+            //create a new list of carpets for storing the carpets selected for current quote
+            List<Carpet> carpetsForThisQuote = new List<Carpet>();
 
-            float totalCost = float.Parse(cheapestCarpets[0][1]) + (hoursLabor / 2) + ((hoursLabor / 2) * numRooms);
-            totalCost /= .60f;
-            Console.WriteLine(totalCost);
+            //create a new list of quotes for storing potential quotes
+            List<Quote> potentialQuotes = new List<Quote>();
 
-            //thisGrade++;
+            //create a new list for counting purposes
+            int countCarpets = 0;
 
-            //}
+            //create a new integer with the current grade the user chose
+            int thisGrade = userInputs[3];
 
+            //create a new carpet list that stores all carpets with the grade chosen by the user
+            List<Carpet> carpetsBySelectedGrade = carpetsByPricePerSqFoot.Where(k => k.grade == userInputs[3]).ToList();
 
+            //loop until grade is greater than 9
+            while(thisGrade < 10)
+            {
+                //create a new integer that stores the number of carpets in the ordered by grade list at this point in time
+                int initialCount = carpetsBySelectedGrade.Count;
 
+                //loop until the carpet cont is equal to or more than the initial count
+                while(countCarpets < initialCount)
+                {
+                    //set the ordered by grade list to the original set of values from the old list using the current grade
+                    carpetsBySelectedGrade = carpetsByPricePerSqFoot.Where(k => k.grade == thisGrade).ToList();
+
+                    //loop until the count of carpets ordered by grade is equal to or less than 1
+                    while (carpetsBySelectedGrade.Count > 1)
+                    {
+                        //declare an integer to store the accumulate square footage of current quote and set to 0
+                        int accumulatedSqFootage = 0;
+
+                        //loop until the accumulated square footage is equal to or more than the user's required square footage or
+                        //until the count for carpets by grade is equal to or less than 0
+                        while (accumulatedSqFootage < userInputs[0] && carpetsBySelectedGrade.Count > 0)
+                        {
+                            //check to see if carpet count is less than the number of carpets in the ordered by grade list
+                            if(countCarpets < carpetsBySelectedGrade.Count())
+                            {
+                                //add the current carpet selected in ordered by grade list to the carpets for quote list
+                                carpetsForThisQuote.Add(carpetsBySelectedGrade[countCarpets]);
+
+                                //remove the carpet that was just added to the quote list
+                                carpetsBySelectedGrade.RemoveAt(countCarpets);
+
+                                //set the accumulated footage to the sum of all square footage in the carpets for quote list
+                                accumulatedSqFootage = carpetsForThisQuote.Sum(k => k.squareFootage);
+                            }
+
+                            else
+                            {
+                                //remove the value at the 0 input in the carpets by grade list to avoid infinite looping
+                                carpetsBySelectedGrade.RemoveAt(0);
+                            }
+                        }
+
+                        //check to see if the square footage sum of the carpets for quote are greater than or equal to user's requirement
+                        if(carpetsForThisQuote.Sum(k => k.squareFootage) >= userInputs[0])
+                        {
+                            //create 3 temporary floats for storing calculated material cost, labor cost, and total price
+                            float materialCostTemp = carpetsForThisQuote.Sum(k => k.price);
+                            float laborCostTemp = (carpetsForThisQuote.Count() * (0.5f * userInputs[2])) + (userInputs[1] * (0.5f * userInputs[2]));
+                            float priceTemp = materialCostTemp + laborCostTemp;
+
+                            //add a new quote to the potential quotes list using the current data acquired from the loops above
+                            potentialQuotes.Add(new Quote {Price = priceTemp, MaterialCost = materialCostTemp, LaborCost = laborCostTemp, 
+                                RollOrders = carpetsForThisQuote.Select(k => k.carpetId).ToArray()});
+                        }
+                    }
+                    //add 1 to the carpets count
+                    countCarpets++;
+                }
+                //add 1 to the grade
+                thisGrade++;
+            }
+
+            //create a quote called cheapest quote and store the first quote that shows up in the potential quotes list ordered by price
+            Quote cheapestQuote = potentialQuotes.OrderBy(k => k.Price).FirstOrDefault();
+
+            //display the contents of the quote to the user by contatenating the strings and values and using a foreach for the roll orders
+            Console.WriteLine("\nCheapest Quote: \n" + "\nPrice: $" + cheapestQuote.Price + "\nMaterial Cost: $" + cheapestQuote.MaterialCost + 
+            "\nLaborCost: $" + cheapestQuote.LaborCost + "\nRollOrders: ");
+            
+            foreach(string s in cheapestQuote.RollOrders)
+            {
+                Console.WriteLine(s);
+            }
         }
     }
 }

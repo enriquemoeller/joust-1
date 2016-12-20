@@ -47,6 +47,8 @@ for(int i = 0; i < csvList.Count(); i++)
     }
 }
 
+
+
 Use the desired grade of carpet or higher first to find all values that match it
 
 Find the cheapest possible carpet from the list
@@ -64,3 +66,30 @@ total labor = find sum of number of carpets times half labor cost and number of 
 total carpet = find sum of prices of the carpets selected
 
 total cost = sum of labor and carpet divided by .6 to include the 40% margin.
+
+
+
+High Level
+
+store csv data into a model
+
+find all carpets of a certain grade
+
+sort them by price per square foot in decending order
+
+Find all that satisfy the square footage
+
+Find all that do not satisfy the square footage
+
+Match all that do not satisfy with others that make it match until square footage is satisfied
+
+Store the cheapest quote
+
+Go back to grade and add 1 to grade if not yet at maximum of 9
+
+Repeat until up to and including maximum grade cheapest quotes have been stored
+
+Display the cheapest quote
+
+
+
