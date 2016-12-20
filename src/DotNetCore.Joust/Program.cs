@@ -250,7 +250,7 @@ namespace DotNetCore.Joust
                                 accumulatedSqFootage = carpetsForThisQuote.Sum(k => k.squareFootage);
                             }
 
-                            else
+                            else if(carpetsBySelectedGrade.Count > 0)
                             {
                                 //remove the value at the 0 input in the carpets by grade list to avoid infinite looping
                                 carpetsBySelectedGrade.RemoveAt(0);
@@ -263,7 +263,7 @@ namespace DotNetCore.Joust
                             //create 3 temporary floats for storing calculated material cost, labor cost, and total price
                             float materialCostTemp = carpetsForThisQuote.Sum(k => k.price);
                             float laborCostTemp = (carpetsForThisQuote.Count() * (0.5f * userInputs[2])) + (userInputs[1] * (0.5f * userInputs[2]));
-                            float priceTemp = materialCostTemp + laborCostTemp;
+                            float priceTemp = (materialCostTemp + laborCostTemp) / 0.6f;
 
                             //add a new quote to the potential quotes list using the current data acquired from the loops above
                             potentialQuotes.Add(new Quote {Price = priceTemp, MaterialCost = materialCostTemp, LaborCost = laborCostTemp, 
@@ -277,16 +277,25 @@ namespace DotNetCore.Joust
                 thisGrade++;
             }
 
-            //create a quote called cheapest quote and store the first quote that shows up in the potential quotes list ordered by price
-            Quote cheapestQuote = potentialQuotes.OrderBy(k => k.Price).FirstOrDefault();
-
-            //display the contents of the quote to the user by contatenating the strings and values and using a foreach for the roll orders
-            Console.WriteLine("\nCheapest Quote: \n" + "\nPrice: $" + cheapestQuote.Price + "\nMaterial Cost: $" + cheapestQuote.MaterialCost + 
-            "\nLaborCost: $" + cheapestQuote.LaborCost + "\nRollOrders: ");
-            
-            foreach(string s in cheapestQuote.RollOrders)
+            if(potentialQuotes.Any())
             {
-                Console.WriteLine(s);
+                //create a quote called cheapest quote and store the first quote that shows up in the potential quotes list ordered by price
+                Quote cheapestQuote = potentialQuotes.OrderBy(k => k.Price).FirstOrDefault();
+
+                //display the contents of the quote to the user by contatenating the strings and values and using a foreach for the roll orders
+                Console.WriteLine("\nCheapest Quote: \n" + "\nPrice: " + cheapestQuote.Price.ToString("c2") + "\nMaterial Cost: " + cheapestQuote.MaterialCost.ToString("c2") + 
+                "\nLaborCost: " + cheapestQuote.LaborCost.ToString("c2") + "\nRollOrders: ");
+                
+                foreach(string s in cheapestQuote.RollOrders)
+                {
+                    Console.WriteLine(s);
+                }
+            }
+
+            else
+            {
+                Console.WriteLine("\nI'm sorry, but no quotes could be found matching your criteria, please try again...");
+                Console.ReadLine();
             }
         }
     }
